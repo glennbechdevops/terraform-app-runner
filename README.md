@@ -187,4 +187,15 @@ for å fortelle app runner hvilket container som skal deployes.
 
 * Kjør byggejobben manuelt førte gang gang.  Det vil det lages en docker container som pushes til ECR repository. App runner vil lage en service 
 * Sjekk at det er dukket opp to container images i ECR. En med en tag som matcher git commit, og en som heter latest.
-* Lag en Pull request, ved å gjøre en endring i terraform koden, sjekk at det blir lagt på en kommentar
+* Lag en Pull request, ved å gjøre en endring i terraform koden, sjekk at det blir lagt på en kommentar. Prøv for eksempel å spesifisere minne og cpu slik 
+
+```hcl
+resource "aws_apprunner_service" "service" {
+  service_name = var.prefix
+
+  instance_configuration {
+    memory = "2048"
+    cpu = "1024"
+  }
+  ....
+```
