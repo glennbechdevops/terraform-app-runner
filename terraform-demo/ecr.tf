@@ -4,4 +4,5 @@ resource "aws_ecr_repository" "myrepo" {
 
 variable "repo_name" {
   type = string
+  default = "seno005-repo"
 }
