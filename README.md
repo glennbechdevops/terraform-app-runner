@@ -9,6 +9,7 @@ Når du gjør en commit på main branch i dette, så vil GitHub actions gjøre
 * I denne oppgaven skal vi gjøre en en docker container tilgjengelig over internett ved hjelp av en tjeneste AWS Apprunner.
 * Apprunner lager nødvendig infrastruktur for containeren, slik at du som utvikler kan fokusere på koden.
 
+
 Vi skal også se nærmere på mer avansert GitHub Actions: For eksempel;
 
 * To jobber og avhengigheter mellom disse.
