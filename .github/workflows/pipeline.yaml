@@ -59,4 +59,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-         run: terraform apply -var="prefix=seno005" -var="image=244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005-private:latest" -auto-approve
+         run: terraform apply -var="prefix=seno005" -var="image=244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005-private:latest" --auto-approve
