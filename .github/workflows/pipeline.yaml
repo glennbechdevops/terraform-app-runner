@@ -25,8 +25,8 @@ jobs:
           aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 244530008913.dkr.ecr.eu-west-1.amazonaws.com
           rev=$(git rev-parse --short HEAD)
           docker build . -t hello
-          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:$rev
-          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005:$rev
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005:latest
 
   terraform:
     name: "Terraform"
@@ -36,7 +36,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: eu-west-1
-      IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
+      IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005:latest
       PREFIX: glennbech3
  #    TF_LOG: trace
     steps:
@@ -59,4 +59,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -var="prefix=$PREFIX" -var="image=$IMAGE"  -auto-approve
+         run: terraform apply -var="prefix=seno005" -var="image=244530008913.dkr.ecr.eu-west-1.amazonaws.com/seno005-private:latest" -auto-approve
