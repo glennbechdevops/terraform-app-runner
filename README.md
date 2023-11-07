@@ -16,6 +16,7 @@ Vi skal også se nærmere på mer avansert GitHub Actions: For eksempel;
 * Bruke terraform i Pipeline - GitHub actions skal kjøre Terraform for oss.
 * En liten intro til AWS IAM og Roller
 
+
 ## Litt repetisjon
 
 * En terraform *provider* er det magiske elementet som gir Terraform mulighet til å fungere med en lang rekke tjenester og produkter, foreksempel AWS, Azure, Google Cloud, osv.
