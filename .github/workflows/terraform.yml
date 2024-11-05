@@ -61,4 +61,4 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -var="prefix=$PREFIX" -var="image=$IMAGE"  -auto-approve
+        run: terraform apply -var="prefix=danait" -var="image=244530008913.dkr.ecr.eu-west-1.amazonaws.com/danait-private:latest" -auto-approve
