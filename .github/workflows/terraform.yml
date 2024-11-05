@@ -40,7 +40,7 @@ jobs:
       AWS_REGION: eu-west-1
       IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/daha025-private:latest
       PREFIX: danaithb
- #    TF_LOG: trace
+ #    TF_LOG: tracee
     steps:
       - uses: actions/checkout@v3
       - name: Setup Terraform
