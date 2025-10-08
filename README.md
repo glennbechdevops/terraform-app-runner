@@ -69,7 +69,7 @@ aws ecr create-repository --repository-name <ditt-studentnavn> --region eu-west-
 ```
 
 Verifiser at repositoriet er opprettet i AWS Console under ECR-tjenesten, og noter deg:
-- Repository URI (f.eks. `<DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<ditt-studentnavn>`)
+- Repository URI (f.eks. `244530008913.dkr.ecr.eu-west-1.amazonaws.com/<ditt-studentnavn>`)
 - Din AWS Account ID (12-sifret nummer)
 
 ## Slå på GitHub Actions for din fork
@@ -126,13 +126,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com
+          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 244530008913.dkr.ecr.eu-west-1.amazonaws.com
           rev=$(git rev-parse --short HEAD)
           docker build . -t hello
-          docker tag hello <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
-          docker tag hello <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
-          docker push <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
-          docker push <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
+          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
+          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
 
   terraform:
     name: "Terraform"
@@ -142,7 +142,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: eu-west-1
-      IMAGE: <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
+      IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
       PREFIX: <STUDENTNAVN>
  #    TF_LOG: trace
     steps:
@@ -203,7 +203,7 @@ Terraform trenger Docker container som lages i en egen GitHub Actions jobb. Vi k
 
 I workflow-filen du kopierte inn, må du erstatte placeholders med dine verdier:
 
-1. Erstatt `<DIN-AWS-ACCOUNT-ID>` med din AWS Account ID (12-sifret nummer)
+1. Erstatt `244530008913` med din AWS Account ID (12-sifret nummer)
 2. Erstatt `<STUDENTNAVN>` med ditt studentnavn (må matche ECR repository navn)
 
 Dette må gjøres på følgende steder i workflow-filen:
