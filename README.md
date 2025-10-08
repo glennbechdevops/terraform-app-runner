@@ -16,51 +16,30 @@ Vi skal også se nærmere på mer avanserte GitHub Actions. Eksempler på dette 
 
 ## Lag en fork
 
-Før du starter må du lage en fork av dette repoet i din GitHub konto
+Før du starter må du lage en fork av dette repoet i din GitHub konto:
 
-## Logg i Cloud 9 miljøet ditt
+1. Klikk på "Fork"-knappen øverst til høyre på denne siden
+2. Velg din egen GitHub-konto som destinasjon
 
-![Alt text](img/aws_login.png  "a title")
+## Start GitHub Codespaces
 
-* Logg på med din AWS bruker med URL, brukernavn og passord gitt i klassrommet
-* Gå til tjenesten Cloud9 (Du nå søke på Cloud9 uten mellomrom i søket)
-* Velg "Open IDE"
-* Hvis du ikke ser ditt miljø, kan det hende du har valgt feil region. Hvilken region du skal bruke vil bli oppgitt i klasserommet.
+1. Gå til din fork av repositoriet på GitHub
+2. Klikk på den grønne "Code"-knappen
+3. Velg "Codespaces"-fanen
+4. Klikk på "Create codespace on main"
 
-### Lag et Access Token for GitHub
+GitHub Codespaces vil nå sette opp et komplett utviklingsmiljø i skyen med alle nødvendige verktøy installert.
 
-* Når du skal autentisere deg mot din GitHub konto fra Cloud 9 trenger du et access token.  Gå til  https://github.com/settings/tokens og lag et nytt.
-* NB. Ta vare på tokenet et sted, du trenger dette senere når du skal gjøre ```git push```
+### Konfigurer Git i Codespaces
 
-Access token må ha "repo" tillatelser, og "workflow" tillatelser.
-
-![Alt text](img/new_token.png  "a title")
-
-### Lage en klone av din Fork (av dette repoet) inn i ditt Cloud 9 miljø
-
-Fra Terminal i Cloud 9. Klone repositoriet *ditt* med HTTPS URL.
-
-```
-git clone https://github.com/≤github bruker>/terraform-app-runner.git
-```
-
-PS. Får du denne feilmeldingen ```bash: /terraform-app-runner: Permission denied``` - så glemte du å bytte ut <github bruker> med
-ditt eget Github brukernavn :-)
-
-OBS Når du gjør ```git push``` senere og du skal autentisere deg, skal du bruke GitHub  brukernavn, og access token som passord,
-
-For å slippe å autentisere seg hele tiden kan man få git til å cache nøkler i et valgfritt antall sekunder på denne måten;
+Når Codespaces har startet, åpne terminalen og konfigurer Git med ditt brukernavn og e-post:
 
 ```shell
-git config --global credential.helper "cache --timeout=86400"
+git config --global user.name "ditt-github-brukernavn"
+git config --global user.email "din-epost@example.com"
 ```
 
-Konfigurer også brukernavnet og e-posten din for GitHub CLI. Da slipepr du advarsler i terminalen når du gjør commit senere.
-
-````shell
-git config --global user.name <github brukernavn>
-git config --global user.email <email for github bruker>
-````
+GitHub Codespaces er allerede autentisert mot GitHub, så du trenger ikke å opprette access tokens for Git-operasjoner.
 
 ## Slå på GitHub actions for din fork
 
