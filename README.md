@@ -1,4 +1,4 @@
-# Infrastruktur som kode med Terraform og AWS App runner
+# Infrastruktur som kode med Terraform og AWS App Runner
 
 Når du er ferdig med denne oppgaven, vil du ha et repository som inneholder en Spring Boot-applikasjon. Hver gang du gjør en commit til main branch, vil GitHub Actions utføre følgende:
 
@@ -41,16 +41,54 @@ git config --global user.email "din-epost@example.com"
 
 GitHub Codespaces er allerede autentisert mot GitHub, så du trenger ikke å opprette access tokens for Git-operasjoner.
 
-## Slå på GitHub actions for din fork
+## Konfigurer AWS CLI i Codespaces
 
-I din fork av dette repositoriet, velg "actions" for å slå på støtte for GitHub actions i din fork.
+Lag IAM Access Keys for din bruker i AWS Console, og konfigurer AWS CLI:
+
+```bash
+aws configure
+# AWS Access Key ID: [din key]
+# AWS Secret Access Key: [din secret]
+# Default region name: eu-west-1
+# Default output format: json
+```
+
+Test at det fungerer:
+```bash
+aws sts get-caller-identity
+```
+
+**NB:** Aldri commit AWS-nøkler til Git.
+
+## Opprett ECR repository
+
+Opprett et ECR-repository for å lagre Docker-imaget ditt:
+
+```bash
+aws ecr create-repository --repository-name <ditt-studentnavn> --region eu-west-1
+```
+
+Verifiser at repositoriet er opprettet i AWS Console under ECR-tjenesten, og noter deg:
+- Repository URI (f.eks. `<DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<ditt-studentnavn>`)
+- Din AWS Account ID (12-sifret nummer)
+
+## Slå på GitHub Actions for din fork
+
+I din fork av dette repositoriet, velg "actions" for å slå på støtte for GitHub Actions i din fork.
 
 ![Alt text](img/7.png "3")
 
 ### Lag Repository secrets
 
-* Lag AWS IAM Access Keys for din bruker.  
-* Se på .github/workflows/pipeline.yaml - Vi gjør AWS hemmeligheter tilgjengelig for GitHub ved å legge til følgende kodeblokk i github actions workflow fila vår slik at terraform kan autentisere seg med vår identitet, og våre rettigheter.
+GitHub Actions trenger tilgang til AWS-nøklene dine for å kunne bygge og deploye. Legg inn AWS-nøklene som secrets i GitHub:
+
+1. Gå til din fork på GitHub
+2. Klikk på "Settings" → "Secrets and variables" → "Actions"
+3. Klikk "New repository secret" og legg til:
+   - Name: `AWS_ACCESS_KEY_ID`, Value: [din Access Key ID]
+   - Name: `AWS_SECRET_ACCESS_KEY`, Value: [din Secret Access Key]
+
+Disse secrets blir tilgjengelig i workflow-filen slik:
 
 ```yaml
     env:
@@ -59,7 +97,7 @@ I din fork av dette repositoriet, velg "actions" for å slå på støtte for Git
       AWS_REGION: eu-west-1
 ```
 
-## Terraform med GitHub actions
+## Terraform med GitHub Actions
 
 Kopier følgende fil inn i katalogen .github/workflows/ - velg selv et passende navn 
 
@@ -74,7 +112,7 @@ on:
 
 jobs:
   # Builds a new container image, and pushes it on every commit to the repository
-  # Also pushes a tag called "latest" to track the lates commit
+  # Also pushes a tag called "latest" to track the latest commit
 
   build_docker_image:
     name: Push Docker image to ECR
@@ -88,13 +126,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 244530008913.dkr.ecr.eu-west-1.amazonaws.com
+          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com
           rev=$(git rev-parse --short HEAD)
           docker build . -t hello
-          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:$rev
-          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
-          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:$rev
-          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
+          docker tag hello <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
+          docker tag hello <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
+          docker push <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:$rev
+          docker push <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
 
   terraform:
     name: "Terraform"
@@ -104,8 +142,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: eu-west-1
-      IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
-      PREFIX: glennbech3
+      IMAGE: <DIN-AWS-ACCOUNT-ID>.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
+      PREFIX: <STUDENTNAVN>
  #    TF_LOG: trace
     steps:
       - uses: actions/checkout@v3
@@ -135,7 +173,7 @@ jobs:
 
 
 Her ser vi et steg i en pipeline med en ```if``` - som bare skjer dersom det er en ```pull request``` som bygges, vi ser også at
-pipeline får lov til å _fortsette dersom dette steget feiler.
+pipeline får lov til å fortsette dersom dette steget feiler.
 
 ```yaml
   - name: Terraform Plan
@@ -145,7 +183,7 @@ pipeline får lov til å _fortsette dersom dette steget feiler.
     continue-on-error: true
 ```
 
-Når noen gjør en Git push til *main* branch, kjører vi ```terraform apply``` med ett flag ```--auto-approve``` som gjør at terraform ikke
+Når noen gjør en Git push til *main* branch, kjører vi ```terraform apply``` med et flag ```--auto-approve``` som gjør at Terraform ikke
 spør om lov før den kjører.
 
 ```yaml
@@ -154,55 +192,26 @@ spør om lov før den kjører.
         run: terraform apply -auto-approve
 ```
 
-Terraform trenger docker container som lages i en egen GitHub Actions jobb. Vi kan da bruke ```needs``` for å lage en avhengighet mellom en eller flere jobber;
+Terraform trenger Docker container som lages i en egen GitHub Actions jobb. Vi kan da bruke ```needs``` for å lage en avhengighet mellom en eller flere jobber;
 
 ```yaml
   terraform:
     needs: build_docker_image
 ```
 
-## Opprett ditt eget ECR repository med Terraform
+## Tilpass workflow-filen til ditt repository
 
-Du må opprette et ECR (Elastic Container Registry) repository for å lagre Docker-imaget ditt.
+I workflow-filen du kopierte inn, må du erstatte placeholders med dine verdier:
 
-I katalogen `terraform-demo/` finner du et eksempel på hvordan du oppretter et ECR-repository med Terraform:
+1. Erstatt `<DIN-AWS-ACCOUNT-ID>` med din AWS Account ID (12-sifret nummer)
+2. Erstatt `<STUDENTNAVN>` med ditt studentnavn (må matche ECR repository navn)
 
-1. Se på filen `terraform-demo/ecr.tf` - dette er en enkel Terraform-konfigurasjon som oppretter et ECR-repository
-2. Kjør følgende kommandoer fra `terraform-demo/` katalogen for å opprette ditt ECR-repository:
-
-```bash
-cd terraform-demo
-terraform init
-terraform apply -var="repo_name=<ditt-studentnavn>"
-```
-
-3. Gå til AWS Console og tjenesten ECR for å verifisere at repositoriet er opprettet
-4. Kopier URI-en til ditt ECR-repository - du trenger denne i neste steg
-
-## Gjør nødvendig endringer i pipeline.yml
-
-Som dere ser er "glenn" og "244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn" hardkodet ganske mange steder. Du må erstatte dette med ditt eget ECR repository som du nettopp opprettet.
-
-* Oppgave: Endre kodeblokken under slik at den *også* pusher en "latest" tag.
-
-```sh
-  docker build . -t hello
-  docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:$rev
-  docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:$rev
-  docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn:latest
-```
-
-## Endre terraform apply linjen
-
-Finn denne linjen, du må endre prefix til å være ditt studentnavn, du må også legge inn studentnavn i image variabelen
-for å fortelle app runner hvilket container som skal deployes.
-
-```
- run: terraform apply -var="prefix=<studentnavn>" -var="image=244530008913.dkr.ecr.eu-west-1.amazonaws.com/<studentnavn>-private:latest" -auto-approve
-```
+Dette må gjøres på følgende steder i workflow-filen:
+- I `build_docker_image` jobben: docker login, docker tag og docker push kommandoene
+- I `terraform` jobben: `IMAGE` og `PREFIX` environment variables
 
 ## Test
 
-* Kjør byggejobben manuelt førte gang gang. Det vil det lages en docker container som pushes til ECR repository. App runner vil lage en service
+* Kjør byggejobben manuelt første gang. Det vil lages en Docker container som pushes til ECR repository. App Runner vil lage en service
 * Sjekk at det er dukket opp to container images i ECR. En med en tag som matcher git commit, og en som heter "latest".
-* Lag en Pull request og se at det bare ````plan```` kjøres.
+* Lag en Pull request og se at det bare ```plan``` kjøres.
