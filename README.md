@@ -201,10 +201,7 @@ Terraform trenger Docker container som lages i en egen GitHub Actions jobb. Vi k
 
 ## Tilpass workflow-filen til ditt repository
 
-I workflow-filen du kopierte inn, må du erstatte placeholders med dine verdier:
-
-1. Erstatt `244530008913` med din AWS Account ID (12-sifret nummer)
-2. Erstatt `<STUDENTNAVN>` med ditt studentnavn (må matche ECR repository navn)
+Erstatt `<STUDENTNAVN>` med ditt studentnavn (må matche ECR repository navn)
 
 Dette må gjøres på følgende steder i workflow-filen:
 - I `build_docker_image` jobben: docker login, docker tag og docker push kommandoene
