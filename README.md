@@ -161,15 +161,27 @@ Terraform trenger docker container som lages i en egen GitHub Actions jobb. Vi k
     needs: build_docker_image
 ```
 
-## Finn ditt ECR repository
+## Opprett ditt eget ECR repository med Terraform
 
-* Det er laget et ECR repository til hver student som en del av labmiljøet
-* Dette heter *studentnavn-private*
-* Gå til tjenesten ECR og sjekk at dette finnes
+Du må opprette et ECR (Elastic Container Registry) repository for å lagre Docker-imaget ditt.
+
+I katalogen `terraform-demo/` finner du et eksempel på hvordan du oppretter et ECR-repository med Terraform:
+
+1. Se på filen `terraform-demo/ecr.tf` - dette er en enkel Terraform-konfigurasjon som oppretter et ECR-repository
+2. Kjør følgende kommandoer fra `terraform-demo/` katalogen for å opprette ditt ECR-repository:
+
+```bash
+cd terraform-demo
+terraform init
+terraform apply -var="repo_name=<ditt-studentnavn>"
+```
+
+3. Gå til AWS Console og tjenesten ECR for å verifisere at repositoriet er opprettet
+4. Kopier URI-en til ditt ECR-repository - du trenger denne i neste steg
 
 ## Gjør nødvendig endringer i pipeline.yml
 
-Som dere ser er "glenn" hardkodet ganske mange steder, bruk ditt eget ECR repository.
+Som dere ser er "glenn" og "244530008913.dkr.ecr.eu-west-1.amazonaws.com/glenn" hardkodet ganske mange steder. Du må erstatte dette med ditt eget ECR repository som du nettopp opprettet.
 
 * Oppgave: Endre kodeblokken under slik at den *også* pusher en "latest" tag.
 
