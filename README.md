@@ -30,17 +30,6 @@ Før du starter må du lage en fork av dette repoet i din GitHub konto:
 
 GitHub Codespaces vil nå sette opp et komplett utviklingsmiljø i skyen med alle nødvendige verktøy installert.
 
-### Konfigurer Git i Codespaces
-
-Når Codespaces har startet, åpne terminalen og konfigurer Git med ditt brukernavn og e-post:
-
-```shell
-git config --global user.name "ditt-github-brukernavn"
-git config --global user.email "din-epost@example.com"
-```
-
-GitHub Codespaces er allerede autentisert mot GitHub, så du trenger ikke å opprette access tokens for Git-operasjoner.
-
 ## Konfigurer AWS CLI i Codespaces
 
 Lag IAM Access Keys for din bruker i AWS Console, og konfigurer AWS CLI:
