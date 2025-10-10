@@ -65,7 +65,7 @@ Verifiser at repositoriet er opprettet i AWS Console under ECR-tjenesten, og not
 
 I din fork av dette repositoriet, velg "actions" for å slå på støtte for GitHub Actions i din fork.
 
-![Alt text](img/7.png "3")
+<img width="1143" height="104" alt="image" src="https://github.com/user-attachments/assets/90366061-e213-4d24-a527-b012af6c36ff" />
 
 ### Lag Repository secrets
 
