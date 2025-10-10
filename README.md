@@ -16,7 +16,7 @@ Vi skal også se nærmere på mer avanserte GitHub Actions. Eksempler på dette 
 
 ## Lag en fork
 
-Før du starter må du lage en fork av dette repoet i din GitHub-konto:
+Før du starter må du lage en fork av dette repoet i din GitHub konto:
 
 1. Klikk på "Fork"-knappen øverst til høyre på denne siden
 2. Velg din egen GitHub-konto som destinasjon
@@ -161,8 +161,8 @@ jobs:
 ### Se over workflow filen - legg merke til følgende
 
 
-Her ser vi et steg i en pipeline med en ```if``` - som bare skjer dersom det er en ```pull request``` som bygges. Vi ser også at
-pipelineen får lov til å fortsette dersom dette steget feiler.
+Her ser vi et steg i en pipeline med en ```if``` - som bare skjer dersom det er en ```pull request``` som bygges, vi ser også at
+pipeline får lov til å fortsette dersom dette steget feiler.
 
 ```yaml
   - name: Terraform Plan
