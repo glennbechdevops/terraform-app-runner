@@ -77,14 +77,6 @@ GitHub Actions trenger tilgang til AWS-nøklene dine for å kunne bygge og deplo
    - Name: `AWS_ACCESS_KEY_ID`, Value: [din Access Key ID]
    - Name: `AWS_SECRET_ACCESS_KEY`, Value: [din Secret Access Key]
 
-Disse secrets blir tilgjengelig i workflow-filen slik:
-
-```yaml
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: eu-west-1
-```
 
 ## Terraform med GitHub Actions
 
@@ -133,7 +125,6 @@ jobs:
       AWS_REGION: eu-west-1
       IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/<STUDENTNAVN>:latest
       PREFIX: <STUDENTNAVN>
- #    TF_LOG: trace
     steps:
       - uses: actions/checkout@v3
       - name: Setup Terraform
@@ -160,18 +151,6 @@ jobs:
 
 ### Se over workflow filen - legg merke til følgende
 
-
-Her ser vi et steg i en pipeline med en ```if``` - som bare skjer dersom det er en ```pull request``` som bygges. Vi ser også at
-pipelineen får lov til å fortsette dersom dette steget feiler.
-
-```yaml
-  - name: Terraform Plan
-    id: plan
-    if: github.event_name == 'pull_request'
-    run: terraform plan -no-color
-    continue-on-error: true
-```
-
 Når noen gjør en Git push til *main* branch, kjører vi ```terraform apply``` med et flag ```--auto-approve``` som gjør at Terraform ikke
 spør om lov før den kjører.
 
@@ -181,12 +160,23 @@ spør om lov før den kjører.
         run: terraform apply -auto-approve
 ```
 
-Terraform trenger Docker container som lages i en egen GitHub Actions jobb. Vi kan da bruke ```needs``` for å lage en avhengighet mellom en eller flere jobber;
+ Vi kan da bruke ```needs``` for å lage en avhengighet mellom en eller flere jobber;
 
 ```yaml
   terraform:
     needs: build_docker_image
 ```
+
+## Tilpass provider.tf 
+
+I provider.tf filen finner du en referanse til Terraform sin state fil. Den må være unik for deg, så Terraform ikke blander ressurser 
+med andre studenter som gjør øvingen. 
+
+  backend "s3" {
+    bucket = "pgr301-2024-terraform-state"
+    key    = "<STUDENT-NAVN>/apprunner-a-new-state.state"
+    region = "eu-west-1"
+  }
 
 ## Tilpass workflow-filen til ditt repository
 
