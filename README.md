@@ -188,6 +188,6 @@ Dette må gjøres på følgende steder i workflow-filen:
 
 ## Test
 
-* Kjør byggejobben manuelt første gang. Det vil lages en Docker container som pushes til ECR repository. App Runner vil lage en service
+* Gjør en push til main branch i repositoryet.
 * Sjekk at det er dukket opp to container images i ECR. En med en tag som matcher git commit, og en som heter "latest".
 * Lag en Pull request og se at det bare ```plan``` kjøres.
