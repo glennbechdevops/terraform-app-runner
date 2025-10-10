@@ -171,12 +171,13 @@ spør om lov før den kjører.
 
 I provider.tf filen finner du en referanse til Terraform sin state fil. Den må være unik for deg, så Terraform ikke blander ressurser 
 med andre studenter som gjør øvingen. 
-
+```
   backend "s3" {
     bucket = "pgr301-2024-terraform-state"
     key    = "<STUDENT-NAVN>/apprunner-a-new-state.state"
     region = "eu-west-1"
   }
+```
 
 ## Tilpass workflow-filen til ditt repository
 
