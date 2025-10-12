@@ -5,10 +5,11 @@ terraform {
       version = "4.39.0"
     }
   }
-  backend "s3" {
+    backend "s3" {
     bucket = "pgr301-2024-terraform-state"
-    key    = "<STUDENT-NAVN>/apprunner-a-new-state.state"
+    key    = "<lucas-hammerstad>/apprunner-a-new-state.state"
     region = "eu-west-1"
+
   }
 }
 
