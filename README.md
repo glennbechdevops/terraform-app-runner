@@ -192,3 +192,10 @@ Dette må gjøres på følgende steder i workflow-filen:
 * Gjør en push til main branch i repositoryet.
 * Sjekk at det er dukket opp to container images i ECR. En med en tag som matcher git commit, og en som heter "latest".
 * Lag en Pull request og se at det bare ```plan``` kjøres.
+Test PR
+
+
+
+
+Dette er min test : )
+Test PR

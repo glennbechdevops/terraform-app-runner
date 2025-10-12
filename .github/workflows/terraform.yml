@@ -1,0 +1,63 @@
+name: "Terraform"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  # Builds a new container image, and pushes it on every commit to the repository
+  # Also pushes a tag called "latest" to track the latest commit
+
+  build_docker_image:
+    name: Push Docker image to ECR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Build and push Docker image
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 244530008913.dkr.ecr.eu-west-1.amazonaws.com
+          rev=$(git rev-parse --short HEAD)
+          docker build . -t hello
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/lucas-hammerstad:$rev
+          docker tag hello 244530008913.dkr.ecr.eu-west-1.amazonaws.com/lucas-hammerstad:latest
+          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/lucas-hammerstad:$rev
+          docker push 244530008913.dkr.ecr.eu-west-1.amazonaws.com/lucas-hammerstad:latest
+
+  terraform:
+    name: "Terraform"
+    needs: build_docker_image
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-west-1
+      IMAGE: 244530008913.dkr.ecr.eu-west-1.amazonaws.com/lucas-hammerstad:latest
+      PREFIX: lucas-hammerstad
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan   -var="prefix=$PREFIX" -var="image=$IMAGE"  -no-color
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -var="prefix=$PREFIX" -var="image=$IMAGE"  -auto-approve
